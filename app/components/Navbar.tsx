@@ -24,6 +24,7 @@ export default function Navbar() {
 
   return (
     <nav
+      id="top-nav"
       className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-12 py-6 transition-all duration-300"
       style={{
         borderBottom: scrolled ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
