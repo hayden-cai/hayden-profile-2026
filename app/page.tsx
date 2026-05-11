@@ -6,6 +6,8 @@ import Experience from "./components/Experience";
 import BottomNav from "./components/BottomNav";
 import Contact from "./components/Contact";
 import Projects from "./components/Projects";
+import Travel from "./components/Travel";
+import Spotify from "./components/Spotify";
 
 
 export default function Home() {
@@ -18,6 +20,8 @@ export default function Home() {
       <Stack />
       <Experience />
       <Projects />
+      <Spotify/>
+      <Travel/>
       <Contact />
     </main>
   );
