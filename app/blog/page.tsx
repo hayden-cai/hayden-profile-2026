@@ -9,6 +9,7 @@ import {
   RefinementList,
   useInstantSearch,
 } from "react-instantsearch";
+import type { BaseHit, Hit } from "instantsearch.js";
 import { posts } from "@/app/src/data/posts";
 
 const searchClient = algoliasearch(
@@ -31,7 +32,7 @@ const tagColors: Record<string, string> = {
   "Full-Stack": "linear-gradient(135deg, #0a1a00, #1a2e00)",
 };
 
-type HitType = {
+type BlogHit = BaseHit & {
   objectID: string;
   slug: string;
   title: string;
@@ -41,29 +42,27 @@ type HitType = {
   readTime: string;
 };
 
-function Hit({ hit }: { hit: HitType }) {
-  const bg = tagColors[hit.tag] || "linear-gradient(135deg, #1a1a1a, #2a2a2a)";
+function BlogHitCard({ hit }: { hit: Hit<BlogHit> }) {
+  const bg = tagColors[hit.tag] ?? "linear-gradient(135deg, #1a1a1a, #2a2a2a)";
 
   return (
     <Link href={`/blog/${hit.slug}`} style={{ textDecoration: "none" }}>
       <div
-        className="flex items-start gap-6 py-8 transition-all duration-200"
+        className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 py-8 transition-all duration-200"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.paddingLeft = "0.75rem";
-          (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.02)";
+          e.currentTarget.style.paddingLeft = "0.75rem";
+          e.currentTarget.style.background = "rgba(255,255,255,0.02)";
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.paddingLeft = "0";
-          (e.currentTarget as HTMLDivElement).style.background = "transparent";
+          e.currentTarget.style.paddingLeft = "0";
+          e.currentTarget.style.background = "transparent";
         }}
       >
         {/* Thumbnail */}
         <div
-          className="shrink-0 flex items-center justify-center overflow-hidden"
+          className="shrink-0 flex items-center justify-center overflow-hidden w-full h-[140px] sm:w-[180px] sm:h-[120px]"
           style={{
-            width: 180,
-            height: 120,
             background: bg,
             border: "1px solid rgba(255,255,255,0.06)",
           }}
@@ -126,7 +125,7 @@ function Hit({ hit }: { hit: HitType }) {
         </div>
 
         {/* Arrow */}
-        <span style={{ color: "#333", fontSize: "1rem", flexShrink: 0, marginTop: 4 }}>↗</span>
+        <span className="hidden sm:inline" style={{ color: "#333", fontSize: "1rem", flexShrink: 0, marginTop: 4 }}>↗</span>
       </div>
     </Link>
   );
@@ -138,7 +137,7 @@ function EmptyState() {
   return (
     <div className="py-16 text-center">
       <p style={{ fontFamily: "monospace", fontSize: 12, color: "#333", letterSpacing: 2 }}>
-        NO RESULTS FOR "{results.query}"
+        NO RESULTS FOR &ldquo;{results.query}&rdquo;
       </p>
     </div>
   );
@@ -149,7 +148,7 @@ export default function BlogPage() {
     <main style={{ background: "#111", color: "#fff", minHeight: "100vh" }}>
       {/* Nav */}
       <nav
-        className="flex justify-between items-center px-12 py-6"
+        className="flex justify-between items-center px-5 sm:px-8 md:px-12 py-5 md:py-6"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
       >
         <Link href="/" style={{ fontFamily: "monospace", fontSize: 14, letterSpacing: 2, color: "#666", textDecoration: "none" }}>
@@ -161,7 +160,7 @@ export default function BlogPage() {
       </nav>
 
       <InstantSearch searchClient={searchClient} indexName="blog_posts">
-        <div className="px-12 py-20">
+        <div className="px-5 sm:px-8 md:px-12 py-16 md:py-20">
           {/* Header */}
           <div className="mb-10">
             <p className="text-xs tracking-widest uppercase mb-3" style={{ fontFamily: "monospace", color: "#555" }}>
@@ -189,14 +188,14 @@ export default function BlogPage() {
               <p className="text-xs tracking-widest uppercase mb-4" style={{ fontFamily: "monospace", color: "#444" }}>
                 Filter by topic
               </p>
-              <RefinementList attribute="tag" limit={20}  sortBy={["name:asc"]}/>
+              <RefinementList attribute="tag" limit={20} sortBy={["name:asc"]} />
             </div>
           </div>
 
           {/* Results */}
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
             <EmptyState />
-            <Hits hitComponent={Hit as any} />
+            <Hits<BlogHit> hitComponent={BlogHitCard} />
           </div>
         </div>
 

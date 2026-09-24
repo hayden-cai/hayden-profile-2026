@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local tooling / debug artifacts
+.playwright-mcp/
+.claude/settings.local.json
+/package-lock.json
+/full-page.png
+/hero-initial.png
+/navbar-mobile.png
+/stack-section.png

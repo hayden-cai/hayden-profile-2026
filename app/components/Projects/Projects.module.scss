@@ -1,0 +1,265 @@
+.section {
+  padding: clamp(48px, 7vh, 80px) clamp(20px, 5vw, 64px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header {
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.sectionLabel {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #5a5a63;
+  margin: 0 0 0.8rem;
+}
+
+.sectionLabelNum {
+  margin-right: 1rem;
+}
+
+.heading {
+  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.carouselWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arrowButton {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 10, 15, 0.8);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.2s;
+}
+
+.trackWrapper {
+  overflow: hidden;
+  flex: 1;
+}
+
+.track {
+  display: flex;
+  gap: 16px;
+  will-change: transform;
+}
+
+.counter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.counterText {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  color: #5a5a63;
+  letter-spacing: 0.1em;
+}
+
+/* Card */
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(16px, 2.5vw, 28px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  text-decoration: none;
+  aspect-ratio: 2/3;
+  min-height: 320px;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+
+    .cardOverlay {
+      opacity: 1;
+    }
+
+    .cardHover {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cardStatic {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+.cardBgImg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+
+  .card:hover & {
+    transform: scale(1.04);
+  }
+}
+
+.cardBgColor {
+  position: absolute;
+  inset: 0;
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.2) 100%);
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+
+.cardNum {
+  position: absolute;
+  right: clamp(10px, 2vw, 20px);
+  top: clamp(8px, 1.5vh, 16px);
+  font-family: 'Geist Mono', monospace;
+  font-weight: 700;
+  font-size: clamp(5rem, 10vw, 9rem);
+  color: rgba(255, 255, 255, 0.08);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+/* Always-visible title at bottom */
+.cardStatic {
+  position: relative;
+  z-index: 2;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  .cardTitle {
+    font-weight: 800;
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+    letter-spacing: -0.03em;
+    color: #fff;
+    line-height: 1;
+    margin: 0;
+  }
+}
+
+/* Hover content */
+.cardHover {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(16px, 2.5vw, 28px);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cardType {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 11px;
+  border-radius: 4px;
+}
+
+.cardYear {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.cardBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardTitle {
+  font-weight: 800;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  letter-spacing: -0.03em;
+  color: #fff;
+  line-height: 1;
+  margin: 0;
+}
+
+.cardDesc {
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cardTag {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.viewProjectBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 7px 14px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.viewProjectIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}

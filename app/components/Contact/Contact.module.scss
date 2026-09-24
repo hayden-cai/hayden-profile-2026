@@ -1,0 +1,87 @@
+.section {
+  padding: clamp(48px, 7vh, 80px) clamp(24px, 5vw, 64px) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sectionLabel {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #5a5a63;
+  margin: 0 0 1rem;
+}
+
+.sectionLabelNum {
+  margin-right: 1rem;
+}
+
+.heading {
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -0.04em;
+  margin: 0 0 3rem;
+  line-height: 0.95;
+}
+
+.linksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(32px, 5vw, 64px);
+  padding: 48px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tagline {
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  color: #f5f5f7;
+  margin: 0;
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+}
+
+.contactLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+}
+
+.contactLinkLabel {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #5a5a63;
+}
+
+.contactLinkText {
+  font-size: 14px;
+  color: #9a9aa3;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 40px 0;
+  margin-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footerText {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: #33333a;
+  margin: 0;
+}

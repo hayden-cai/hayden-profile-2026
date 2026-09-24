@@ -1,316 +1,307 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import Map, { Marker, Popup, NavigationControl } from "react-map-gl/mapbox";
+import { useRef, useState, useCallback } from "react";
+import gsap from "gsap";
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
-
-// Sorted by year so the line follows the journey chronologically
-const places = [
-  { city: "Kunming", country: "China", year: 2015, note: "Hometown 故乡", lng: 102.7123, lat: 25.0389, home: false,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80", label: "Yunnan scenery" },
-      { url: "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=600&q=80", label: "Stone Forest" },
-    ]},
-  { city: "London", country: "UK", year: 2019, note: "Always raining", lng: -0.1276, lat: 51.5074,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80", label: "Tower Bridge" },
-      { url: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80", label: "Big Ben" },
-    ]},
-  { city: "Paris", country: "France", year: 2019, note: "Eiffel Tower ✨", lng: 2.3522, lat: 48.8566,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80", label: "Eiffel Tower" },
-      { url: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80", label: "Seine River" },
-    ]},
-  { city: "Barcelona", country: "Spain", year: 2019, note: "Gaudí & tapas", lng: 2.1734, lat: 41.3851,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=600&q=80", label: "Sagrada Familia" },
-      { url: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=600&q=80", label: "Park Güell" },
-    ]},
-  { city: "Melbourne", country: "Australia", year: 2019, note: "Home base 🏠", lng: 144.9631, lat: -37.8136, home: true,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1514395462725-fb4566210144?w=600&q=80", label: "CBD Skyline" },
-      { url: "https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=600&q=80", label: "Laneways" },
-    ]},
-  { city: "Sydney", country: "Australia", year: 2020, note: "Opera House vibes", lng: 151.2093, lat: -33.8688,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=600&q=80", label: "Opera House" },
-      { url: "https://images.unsplash.com/photo-1524820197278-540916411e20?w=600&q=80", label: "Harbour Bridge" },
-    ]},
-  { city: "Bali", country: "Indonesia", year: 2021, note: "Surf & chill", lng: 115.1889, lat: -8.4095,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80", label: "Tanah Lot Temple" },
-      { url: "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=600&q=80", label: "Rice Terraces" },
-    ]},
-  { city: "Singapore", country: "Singapore", year: 2021, note: "Gardens by the Bay", lng: 103.8198, lat: 1.3521,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1565967511849-76a60a516170?w=600&q=80", label: "Gardens by the Bay" },
-      { url: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=600&q=80", label: "Marina Bay Sands" },
-    ]},
-  { city: "Tokyo", country: "Japan", year: 2022, note: "Best ramen ever", lng: 139.6917, lat: 35.6895,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80", label: "Shibuya Crossing" },
-      { url: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80", label: "Mt. Fuji view" },
-    ]},
-  { city: "Kyoto", country: "Japan", year: 2022, note: "Temples & matcha", lng: 135.7681, lat: 35.0116,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80", label: "Fushimi Inari" },
-      { url: "https://images.unsplash.com/photo-1493997181344-712f2f19d87a?w=600&q=80", label: "Arashiyama" },
-    ]},
-  { city: "Bangkok", country: "Thailand", year: 2023, note: "Street food heaven", lng: 100.5018, lat: 13.7563,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&q=80", label: "Grand Palace" },
-      { url: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80", label: "Street Food" },
-    ]},
-  { city: "New York", country: "USA", year: 2023, note: "Never sleeps", lng: -74.006, lat: 40.7128,
-    photos: [
-      { url: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80", label: "Manhattan Skyline" },
-      { url: "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&q=80", label: "Central Park" },
-    ]},
+const SLIDES = [
+  {
+    region: "— Japan Alps",
+    title: "Nagano\nPrefecture",
+    desc: "Ancient cedar forests, volcanic onsen and snow-capped ridgelines. A trail above the clouds with no one else for miles.",
+    bg: "linear-gradient(135deg,#1a2a1a,#2d4a20,#3d6b2a)",
+    thumbBg: "linear-gradient(135deg,#1a2a1a,#3d6b2a)",
+    thumbRegion: "Japan Alps",
+    thumbName: "NAGANO",
+  },
+  {
+    region: "— Argentina",
+    title: "Patagonia\nTorres Del Paine",
+    desc: "Wind-scoured granite towers and turquoise glacial lakes. The end of the earth — and the beginning of everything.",
+    bg: "linear-gradient(135deg,#0a1828,#103050,#1a4878)",
+    thumbBg: "linear-gradient(135deg,#0a1828,#1a4878)",
+    thumbRegion: "Argentina",
+    thumbName: "PATAGONIA",
+  },
+  {
+    region: "— Italy",
+    title: "Dolomites\nAlta Via 1",
+    desc: "Rose-tinted limestone spires and alpine meadows. One of the world's most dramatic long-distance routes.",
+    bg: "linear-gradient(135deg,#28100a,#502010,#7a3018)",
+    thumbBg: "linear-gradient(135deg,#28100a,#7a3018)",
+    thumbRegion: "Italy",
+    thumbName: "DOLOMITES",
+  },
+  {
+    region: "— Norway",
+    title: "Hardanger\nFjord Trail",
+    desc: "Waterfalls cascade from glacier plateaus into mirror-still fjords. Norway's wildest coast on foot.",
+    bg: "linear-gradient(135deg,#0a1a28,#102840,#1a3858)",
+    thumbBg: "linear-gradient(135deg,#0a1a28,#1a3858)",
+    thumbRegion: "Norway",
+    thumbName: "FJORDS",
+  },
+  {
+    region: "— Nepal",
+    title: "Himalaya\nBase Camp",
+    desc: "Prayer flags, yak trains and 8000m giants. The classic trek to the foot of the world's highest peak.",
+    bg: "linear-gradient(135deg,#1a1428,#2d2050,#3d2c78)",
+    thumbBg: "linear-gradient(135deg,#1a1428,#3d2c78)",
+    thumbRegion: "Nepal",
+    thumbName: "HIMALAYAS",
+  },
 ];
 
 export default function Travel() {
-  const [active, setActive] = useState<number | null>(null);
-  const [filter, setFilter] = useState("All");
-  const mapRef = useRef<any>(null);
+  const [current, setCurrent] = useState(0);
+  const animatingRef = useRef(false);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const regionRef = useRef<HTMLParagraphElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const counterRef = useRef<HTMLDivElement>(null);
 
-  const years = ["All", ...Array.from(new Set(places.map((p) => String(p.year)))).sort()];
-  const filtered = filter === "All" ? places : places.filter((p) => String(p.year) === filter);
+  const goTo = useCallback((next: number) => {
+    if (animatingRef.current || next === current) return;
+    animatingRef.current = true;
 
-  const drawRoute = (map: any, points: typeof places) => {
-    // Remove old layers
-    ["route-line", "route-dashes", "route-glow"].forEach((id) => {
-      if (map.getLayer(id)) map.removeLayer(id);
+    const from = slideRefs.current[current];
+    const to = slideRefs.current[next];
+    if (!from || !to) return;
+
+    // Animate text out
+    gsap.to([titleRef.current, regionRef.current, descRef.current], {
+      opacity: 0, y: -20, duration: 0.3, ease: "power2.in",
     });
-    if (map.getSource("route")) map.removeSource("route");
 
-    if (points.length < 2) return;
+    gsap.set(to, { scale: 0.78, opacity: 0, zIndex: 5 });
+    gsap.set(from, { zIndex: 4 });
 
-    const coords = points.map((p) => [p.lng, p.lat]);
+    gsap.timeline({
+      onComplete() {
+        gsap.set(from, { scale: 0.82, opacity: 0, zIndex: 2 });
+        gsap.set(to, { zIndex: 3 });
+        setCurrent(next);
+        animatingRef.current = false;
 
-    map.addSource("route", {
-      type: "geojson",
-      data: {
-        type: "Feature",
-        geometry: { type: "LineString", coordinates: coords },
+        // Update counter
+        if (counterRef.current) {
+          counterRef.current.textContent = String(next + 1).padStart(2, "0");
+        }
+
+        // Animate text in
+        gsap.set([titleRef.current, regionRef.current, descRef.current], { y: 30, opacity: 0 });
+        gsap.to(regionRef.current, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", delay: 0.1 });
+        gsap.to(titleRef.current, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.2 });
+        gsap.to(descRef.current, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.35 });
       },
-    });
+    })
+      .to(to, { scale: 1, opacity: 1, duration: 0.85, ease: "power3.out" }, 0)
+      .to(from, { scale: 1.06, opacity: 0, duration: 0.6, ease: "power2.in" }, 0.1);
+  }, [current]);
 
-    // Glow layer
-    map.addLayer({
-      id: "route-glow",
-      type: "line",
-      source: "route",
-      paint: {
-        "line-color": "#60a5fa",
-        "line-width": 6,
-        "line-opacity": 0.15,
-        "line-blur": 4,
-      },
-    });
-
-    // Solid line
-    map.addLayer({
-      id: "route-line",
-      type: "line",
-      source: "route",
-      layout: { "line-join": "round", "line-cap": "round" },
-      paint: {
-        "line-color": "#60a5fa",
-        "line-width": 1.5,
-        "line-opacity": 0.8,
-      },
-    });
-
-    // Animated dashes
-    map.addLayer({
-      id: "route-dashes",
-      type: "line",
-      source: "route",
-      layout: { "line-join": "round", "line-cap": "round" },
-      paint: {
-        "line-color": "#fff",
-        "line-width": 1,
-        "line-opacity": 0.5,
-        "line-dasharray": [2, 4],
-      },
-    });
-  };
-
-  const handleMapLoad = () => {
-    const map = mapRef.current?.getMap();
-    if (map) drawRoute(map, filtered);
-  };
-
-  useEffect(() => {
-    const map = mapRef.current?.getMap();
-    if (map && map.isStyleLoaded()) drawRoute(map, filtered);
-  }, [filtered]);
-
-  const flyTo = (lng: number, lat: number) => {
-    mapRef.current?.flyTo({ center: [lng, lat], zoom: 5, duration: 1200 });
-  };
+  const slide = SLIDES[current];
 
   return (
     <section
       id="travel"
-      className="px-12 py-28"
-      style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#0a0a0c",
+      }}
     >
-      {/* Header */}
-      <div className="mb-10">
-        <p className="text-xs tracking-widest uppercase mb-3" style={{ fontFamily: "monospace", color: "#555" }}>
-          <span className="mr-4">06</span>Beyond the Screen
+      <style>{`
+        @keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:0.3} }
+      `}</style>
+
+      {/* BG slides */}
+      {SLIDES.map((s, i) => (
+        <div
+          key={i}
+          ref={(el) => { slideRefs.current[i] = el; }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            transformOrigin: "center center",
+            transform: i === 0 ? "scale(1)" : "scale(0.82)",
+            opacity: i === 0 ? 1 : 0,
+            zIndex: i === 0 ? 3 : 2,
+          }}
+        >
+          <div style={{ position: "absolute", inset: 0, background: s.bg }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,rgba(0,0,0,0.72) 40%,rgba(0,0,0,0.18))" }} />
+        </div>
+      ))}
+
+      {/* LEFT content */}
+      <div
+        style={{
+          position: "absolute",
+          left: "clamp(32px,6vw,96px)",
+          bottom: "clamp(80px,12vh,140px)",
+          zIndex: 10,
+          maxWidth: "560px",
+        }}
+      >
+        <p
+          ref={regionRef}
+          style={{
+            fontFamily: "'Geist Mono',monospace",
+            fontSize: "12px",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.55)",
+            margin: "0 0 16px",
+          }}
+        >
+          {slide.region}
         </p>
-        <div className="flex items-end justify-between flex-wrap gap-4">
-          <h2 className="font-bold" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", letterSpacing: "-2px", color: "#fff" }}>
-            Travel Footprint
-          </h2>
-          <p style={{ fontFamily: "monospace", fontSize: 12, color: "#444" }}>
-            {filtered.length} cities · {new Set(filtered.map((p) => p.country)).size} countries
-          </p>
-        </div>
+        <h2
+          ref={titleRef}
+          style={{
+            fontWeight: 900,
+            fontSize: "clamp(3rem,8vw,7rem)",
+            letterSpacing: "-0.04em",
+            lineHeight: 0.92,
+            margin: "0 0 20px",
+            textTransform: "uppercase",
+            whiteSpace: "pre-line",
+          }}
+        >
+          {slide.title}
+        </h2>
+        <p
+          ref={descRef}
+          style={{
+            fontSize: "14px",
+            lineHeight: 1.65,
+            color: "rgba(255,255,255,0.6)",
+            maxWidth: "38ch",
+            margin: "0 0 32px",
+          }}
+        >
+          {slide.desc}
+        </p>
+        <button
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "10px",
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            color: "#fff",
+            fontFamily: "'Geist Mono',monospace",
+            fontSize: "11px",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            padding: "14px 28px",
+            cursor: "pointer",
+            backdropFilter: "blur(6px)",
+          }}
+        >
+          Discover Trail
+          <span style={{ width: "20px", height: "1px", background: "#fff", display: "inline-block" }} />
+          →
+        </button>
       </div>
 
-      {/* Year filter */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {years.map((y) => (
+      {/* BOTTOM RIGHT: thumbnails + arrows */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "clamp(32px,5vh,64px)",
+          right: "clamp(24px,4vw,64px)",
+          zIndex: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: "16px",
+        }}
+      >
+        {/* Thumbnail row */}
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+          {SLIDES.map((s, i) => (
+            <div
+              key={i}
+              onClick={() => goTo(i)}
+              style={{
+                width: "clamp(110px,11vw,150px)",
+                height: "clamp(70px,8vw,100px)",
+                borderRadius: "10px",
+                overflow: "hidden",
+                cursor: "pointer",
+                border: `2px solid ${i === current ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.15)"}`,
+                position: "relative",
+                flexShrink: 0,
+                transition: "border-color .3s",
+              }}
+            >
+              <div style={{ position: "absolute", inset: 0, background: s.thumbBg }} />
+              <div style={{ position: "absolute", bottom: "7px", left: "9px" }}>
+                <p style={{ fontFamily: "'Geist Mono',monospace", fontSize: "7px", color: "rgba(255,255,255,0.6)", letterSpacing: ".12em", textTransform: "uppercase", margin: 0 }}>
+                  {s.thumbRegion}
+                </p>
+                <p style={{ fontSize: "10px", fontWeight: 700, margin: "2px 0 0" }}>{s.thumbName}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Arrows + counter */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <button
-            key={y}
-            onClick={() => { setFilter(y); setActive(null); }}
+            onClick={() => goTo((current - 1 + SLIDES.length) % SLIDES.length)}
             style={{
-              fontFamily: "monospace", fontSize: 11, letterSpacing: "1.5px",
-              textTransform: "uppercase", padding: "6px 14px", borderRadius: 999,
-              border: filter === y ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255,255,255,0.1)",
-              background: filter === y ? "rgba(255,255,255,0.08)" : "transparent",
-              color: filter === y ? "#fff" : "#555",
-              cursor: "pointer", transition: "all 0.2s",
+              width: "44px", height: "44px", borderRadius: "50%",
+              border: "1px solid rgba(255,255,255,0.25)",
+              background: "rgba(255,255,255,0.08)",
+              color: "#fff", fontSize: "18px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(6px)",
             }}
           >
-            {y}
+            ‹
           </button>
-        ))}
+          <button
+            onClick={() => goTo((current + 1) % SLIDES.length)}
+            style={{
+              width: "44px", height: "44px", borderRadius: "50%",
+              border: "1px solid rgba(255,255,255,0.25)",
+              background: "rgba(255,255,255,0.08)",
+              color: "#fff", fontSize: "18px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            ›
+          </button>
+          <div
+            ref={counterRef}
+            style={{
+              fontFamily: "'Geist Mono',monospace",
+              fontSize: "22px",
+              fontWeight: 800,
+              letterSpacing: "0.05em",
+              color: "rgba(255,255,255,0.2)",
+            }}
+          >
+            01
+          </div>
+        </div>
       </div>
 
-      {/* Map + Right panel */}
-      <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
-
-        {/* Left — Map */}
-        <div style={{ height: 600, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
-          <Map
-            ref={mapRef}
-            initialViewState={{
-              longitude: 80,
-              latitude: 20,
-              zoom: 1.8,
-              pitch: 45,
-              bearing: -10,
-            }}
-            style={{ width: "100%", height: "100%" }}
-            mapStyle="mapbox://styles/mapbox/standard"
-            mapboxAccessToken={MAPBOX_TOKEN}
-            onLoad={(e) => {
-              const map = e.target;
-              // Enable 3D buildings + lighting preset
-              map.setConfigProperty("basemap", "lightPreset", "dusk");
-              map.setConfigProperty("basemap", "show3dObjects", true);
-              handleMapLoad();
-            }}
-          >
-            <NavigationControl position="top-right" />
-            {filtered.map((p, i) => (
-              <Marker key={p.city} longitude={p.lng} latitude={p.lat} anchor="center"
-                onClick={(e) => { e.originalEvent.stopPropagation(); setActive(active === i ? null : i); flyTo(p.lng, p.lat); }}
-              >
-                <div style={{ position: "relative", cursor: "pointer" }}>
-                  <div style={{
-                    position: "absolute", inset: -6, borderRadius: "50%",
-                    background: (p as any).home ? "rgba(74,222,128,0.2)" : "rgba(96,165,250,0.2)",
-                    animation: "tpulse 2s ease-out infinite", animationDelay: `${i * 0.2}s`,
-                  }} />
-                  <div style={{
-                    width: active === i ? 12 : 7, height: active === i ? 12 : 7,
-                    borderRadius: "50%",
-                    background: (p as any).home ? "#4ade80" : "#60a5fa",
-                    border: "1.5px solid rgba(255,255,255,0.4)",
-                    boxShadow: active === i ? "0 0 16px rgba(96,165,250,0.8)" : "none",
-                    transition: "all 0.2s",
-                  }} />
-                </div>
-              </Marker>
-            ))}
-            {active !== null && filtered[active] && (
-              <Popup longitude={filtered[active].lng} latitude={filtered[active].lat}
-                anchor="bottom" offset={16} onClose={() => setActive(null)} closeButton={false}
-              >
-                <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.12)", padding: "10px 14px", minWidth: 160 }}>
-                  <p style={{ fontSize: 13, color: "#fff", fontWeight: 700, margin: 0, fontFamily: "monospace" }}>{filtered[active].city}</p>
-                  <p style={{ fontSize: 10, color: "#555", margin: "2px 0 0", fontFamily: "monospace" }}>{filtered[active].country} · {filtered[active].year}</p>
-                  <p style={{ fontSize: 11, color: "#888", margin: "6px 0 0" }}>{filtered[active].note}</p>
-                </div>
-              </Popup>
-            )}
-          </Map>
-        </div>
-
-        {/* Right panel */}
-        <div className="flex flex-col gap-3" style={{ height: 600 }}>
-
-          {/* Top — city list */}
-          <div className="flex flex-col overflow-y-auto" style={{
-            flex: "0 0 auto", maxHeight: 280,
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}>
-            {filtered.map((p, i) => (
-              <div key={p.city} onClick={() => { setActive(i); flyTo(p.lng, p.lat); }}
-                className="flex items-center gap-3 py-3 px-4 cursor-pointer shrink-0 transition-all duration-200"
-                style={{
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  background: active === i ? "rgba(96,165,250,0.06)" : "transparent",
-                }}
-              >
-                <span style={{ fontSize: 6, color: (p as any).home ? "#4ade80" : active === i ? "#60a5fa" : "#444" }}>●</span>
-                <div>
-                  <p style={{ fontSize: 13, color: active === i ? "#fff" : "#777", fontWeight: 500, transition: "color 0.2s" }}>{p.city}</p>
-                  <p style={{ fontFamily: "monospace", fontSize: 10, color: "#444" }}>{p.country} · {p.year}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom — city photos */}
-          <div className="flex flex-col gap-2" style={{ flex: 1 }}>
-            {active !== null && filtered[active] ? (
-              <>
-                <p style={{ fontFamily: "monospace", fontSize: 10, color: "#555", letterSpacing: 2, textTransform: "uppercase" }}>
-                  {filtered[active].city} · Photos
-                </p>
-                {filtered[active].photos.map((photo, j) => (
-                  <div key={j} className="relative overflow-hidden" style={{ flex: 1, minHeight: 0 }}>
-                    <img src={photo.url} alt={photo.label}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.75 }}
-                    />
-                    <div style={{
-                      position: "absolute", bottom: 0, left: 0, right: 0,
-                      padding: "8px 12px",
-                      background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
-                    }}>
-                      <p style={{ fontFamily: "monospace", fontSize: 10, color: "#fff", letterSpacing: 1, textTransform: "uppercase" }}>
-                        {photo.label}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </>
-            ) : (
-              <div className="flex items-center justify-center h-full" style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
-                <p style={{ fontFamily: "monospace", fontSize: 11, color: "#333", letterSpacing: 2 }}>
-                  SELECT A CITY
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Progress bar */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "2px", background: "rgba(255,255,255,0.08)", zIndex: 10 }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${((current + 1) / SLIDES.length) * 100}%`,
+            background: "rgba(255,255,255,0.6)",
+            transition: "width .4s ease",
+          }}
+        />
       </div>
     </section>
   );
