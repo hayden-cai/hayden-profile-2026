@@ -11,7 +11,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   return (
     <main style={{ background: "#111", color: "#fff", minHeight: "100vh" }}>
       {/* Nav */}
-      <nav className="flex justify-between items-center px-12 py-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <nav
+        className="flex justify-between items-center px-5 sm:px-8 md:px-12 py-5 md:py-6"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+      >
         <Link href="/blog" style={{ fontFamily: "monospace", fontSize: 14, letterSpacing: 2, color: "#666", textDecoration: "none" }}>
           ← BLOG
         </Link>
@@ -20,7 +23,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         </span>
       </nav>
 
-      <article className="px-12 py-20" style={{ maxWidth: 760 }}>
+      <article className="mx-auto max-w-[720px] box-content px-5 sm:px-8 md:px-12 py-14 md:py-20">
         {/* Meta */}
         <div className="flex items-center gap-3 mb-8">
           <span

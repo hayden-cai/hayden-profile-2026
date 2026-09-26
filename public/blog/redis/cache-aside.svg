@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+  <defs>
+    <marker id="ah-app" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#bbbbbb"/>
+    </marker>
+    <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#f87171"/>
+    </marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#60a5fa"/>
+    </marker>
+  </defs>
+
+  <rect width="800" height="520" fill="#0b0b0c"/>
+
+  <!-- Participants -->
+  <g font-size="14" font-weight="700" letter-spacing="2" text-anchor="middle">
+    <rect x="60" y="28" width="120" height="44" rx="6" fill="#161616" stroke="#ffffff" stroke-opacity="0.2"/>
+    <text x="120" y="55" fill="#dddddd">APP</text>
+    <rect x="340" y="28" width="120" height="44" rx="6" fill="#ef4444" fill-opacity="0.1" stroke="#f87171" stroke-opacity="0.6"/>
+    <text x="400" y="55" fill="#f87171">REDIS</text>
+    <rect x="610" y="28" width="140" height="44" rx="6" fill="#60a5fa" fill-opacity="0.08" stroke="#60a5fa" stroke-opacity="0.5"/>
+    <text x="680" y="55" fill="#60a5fa">DATABASE</text>
+  </g>
+
+  <!-- Lifelines -->
+  <g stroke-dasharray="3 6" stroke-width="1.5">
+    <line x1="120" y1="72" x2="120" y2="500" stroke="#ffffff" stroke-opacity="0.18"/>
+    <line x1="400" y1="72" x2="400" y2="500" stroke="#f87171" stroke-opacity="0.3"/>
+    <line x1="680" y1="72" x2="680" y2="500" stroke="#60a5fa" stroke-opacity="0.3"/>
+  </g>
+
+  <!-- READ section -->
+  <rect x="24" y="96" width="752" height="250" rx="6" fill="#ffffff" fill-opacity="0.015" stroke="#ffffff" stroke-opacity="0.06"/>
+  <text x="40" y="120" font-size="12" letter-spacing="3" fill="#777777">READ</text>
+
+  <g font-size="13">
+    <!-- 1 GET -->
+    <line x1="124" y1="150" x2="394" y2="150" stroke="#bbbbbb" stroke-width="1.5" marker-end="url(#ah-app)"/>
+    <text x="260" y="142" text-anchor="middle" fill="#bbbbbb">① GET user:42</text>
+
+    <!-- 2 miss -->
+    <line x1="396" y1="192" x2="126" y2="192" stroke="#f87171" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-red)"/>
+    <text x="260" y="184" text-anchor="middle" fill="#f87171">② miss (nil)</text>
+
+    <!-- 3 query DB -->
+    <line x1="124" y1="234" x2="674" y2="234" stroke="#bbbbbb" stroke-width="1.5" marker-end="url(#ah-app)"/>
+    <text x="540" y="226" text-anchor="middle" fill="#bbbbbb">③ SELECT … id = 42</text>
+
+    <!-- 4 row -->
+    <line x1="676" y1="274" x2="126" y2="274" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-blue)"/>
+    <text x="540" y="266" text-anchor="middle" fill="#60a5fa">④ row</text>
+
+    <!-- 5 SET back -->
+    <line x1="124" y1="316" x2="394" y2="316" stroke="#bbbbbb" stroke-width="1.5" marker-end="url(#ah-app)"/>
+    <text x="260" y="308" text-anchor="middle" fill="#bbbbbb">⑤ SET … EX ttl+jitter</text>
+  </g>
+
+  <!-- WRITE section -->
+  <rect x="24" y="362" width="752" height="140" rx="6" fill="#ffffff" fill-opacity="0.015" stroke="#ffffff" stroke-opacity="0.06"/>
+  <text x="40" y="386" font-size="12" letter-spacing="3" fill="#777777">WRITE</text>
+
+  <g font-size="13">
+    <!-- 6 UPDATE -->
+    <line x1="124" y1="418" x2="674" y2="418" stroke="#bbbbbb" stroke-width="1.5" marker-end="url(#ah-app)"/>
+    <text x="540" y="410" text-anchor="middle" fill="#bbbbbb">⑥ UPDATE users …</text>
+
+    <!-- 7 DEL -->
+    <line x1="124" y1="462" x2="394" y2="462" stroke="#bbbbbb" stroke-width="1.5" marker-end="url(#ah-app)"/>
+    <text x="260" y="454" text-anchor="middle" fill="#bbbbbb">⑦ DEL user:42</text>
+    <text x="420" y="467" fill="#777777" font-size="12">← next read rebuilds it</text>
+  </g>
+</svg>

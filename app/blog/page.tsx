@@ -31,6 +31,7 @@ const tagColors: Record<string, string> = {
   "Serverless": "linear-gradient(135deg, #001a1a, #002e2e)",
   "Full-Stack": "linear-gradient(135deg, #0a1a00, #1a2e00)",
   "Security": "linear-gradient(135deg, #1a0000, #2e0a0a)",
+  "Redis": "linear-gradient(135deg, #2a0808, #4a1010)",
 };
 
 type BlogHit = BaseHit & {

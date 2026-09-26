@@ -56,6 +56,20 @@ test("does not apply bold inside code spans", () => {
   assert.match(html, /<strong[^>]*>d<\/strong>/);
 });
 
+test("renders a pipe table with a header row", () => {
+  const html = renderContent("| Problem | Fix |\n| --- | --- |\n| **Penetration** | Bloom filter |\n| Avalanche | `TTL` jitter |");
+  assert.match(html, /<table/);
+  assert.match(html, /<th[^>]*>Problem<\/th><th[^>]*>Fix<\/th>/);
+  assert.equal(html.match(/<tr/g)?.length, 3);
+  assert.match(html, /<td[^>]*><strong[^>]*>Penetration<\/strong><\/td>/);
+  assert.match(html, /<td[^>]*><code[^>]*>TTL<\/code> jitter<\/td>/);
+});
+
+test("wraps tables in a horizontally scrollable container", () => {
+  const html = renderContent("| a |\n| - |\n| b |");
+  assert.match(html, /^<div style="[^"]*overflow-x:auto[^"]*"><table/);
+});
+
 test("only links https URLs", () => {
   assert.match(renderInline("[OWASP](https://owasp.org)"), /<a href="https:\/\/owasp.org" target="_blank" rel="noopener noreferrer"/);
   assert.doesNotMatch(renderInline("[x](javascript:alert(1))"), /<a /);

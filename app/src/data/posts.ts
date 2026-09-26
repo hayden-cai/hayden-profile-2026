@@ -1,3 +1,4 @@
+import { redisTopUseCases } from "./articles/redisTopUseCases";
 import { webSecurityDefenseInDepth } from "./articles/webSecurityDefenseInDepth";
 
 export type Post = {
@@ -11,6 +12,15 @@ export type Post = {
 };
 
 export const posts: Post[] = [
+  {
+    slug: "redis-top-5-use-cases",
+    title: "Redis beyond caching: 5 use cases with production-ready TypeScript",
+    excerpt: "Caching, sessions, distributed locks, rate limiting and leaderboards — how each one works in Redis, the ioredis code to build it, and the gotchas that bite in production.",
+    date: "Sep 2026",
+    readTime: "14 min read",
+    tag: "Redis",
+    content: redisTopUseCases,
+  },
   {
     slug: "web-security-defense-in-depth",
     title: "Web security in depth: common attacks and layered defences",

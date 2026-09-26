@@ -1,5 +1,5 @@
 // Minimal Markdown-ish renderer for blog posts.
-// Supports: ## / ### headings, paragraphs, - and 1. lists, > callouts,
+// Supports: ## / ### headings, paragraphs, - and 1. lists, > callouts, | tables |,
 // ![alt](src) figures, ``` fenced code, **bold**, `code` and [text](https://…) links.
 
 const STYLES = {
@@ -19,6 +19,10 @@ const STYLES = {
   img: "display:block;width:100%;height:auto;border:1px solid rgba(255,255,255,0.08);border-radius:6px;",
   figcaption: "margin-top:0.75rem;font-family:monospace;font-size:12px;color:#555;text-align:center;",
   a: "color:#60a5fa;text-decoration:underline;text-underline-offset:3px;",
+  tableWrap: "overflow-x:auto;margin:0 0 1.5rem;border:1px solid rgba(255,255,255,0.08);border-radius:6px;",
+  table: "width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;",
+  th: "text-align:left;padding:0.7rem 1rem;color:#ddd;font-weight:600;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.1);white-space:nowrap;",
+  td: "padding:0.7rem 1rem;color:#888;border-top:1px solid rgba(255,255,255,0.05);vertical-align:top;",
 } as const;
 
 const FENCE = /```[\w-]*\n([\s\S]*?)```/g;
@@ -27,9 +31,11 @@ const IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)\)$/;
 const UL_ITEM = /^- (.+)$/;
 const OL_ITEM = /^\d+\. (.+)$/;
 const CALLOUT = /^> ?(.*)$/;
+const TABLE_ROW = /^\|(.+)\|\s*$/;
+const TABLE_SEPARATOR = /^\|?[\s:|-]+\|?$/;
 const LEADING_EMOJI = /^(\p{Extended_Pictographic}️?)\s*/u;
 
-type BlockKind = "p" | "ul" | "ol" | "callout";
+type BlockKind = "p" | "ul" | "ol" | "callout" | "table";
 
 function escapeHtml(text: string): string {
   return text
@@ -56,7 +62,22 @@ export function renderInline(text: string): string {
     .replace(/\u0000(\d+)\u0000/g, (_, i: string) => codeSpans[Number(i)]);
 }
 
+function splitCells(row: string): string[] {
+  return row.split("|").map((cell) => cell.trim());
+}
+
+function renderTable(rows: readonly string[]): string {
+  const [header, ...rest] = rows;
+  const body = rest.filter((row) => !TABLE_SEPARATOR.test(`|${row}|`));
+  const cell = (tag: "th" | "td", text: string) => `<${tag} style="${STYLES[tag]}">${renderInline(text)}</${tag}>`;
+  const head = `<tr>${splitCells(header).map((text) => cell("th", text)).join("")}</tr>`;
+  const bodyRows = body.map((row) => `<tr>${splitCells(row).map((text) => cell("td", text)).join("")}</tr>`).join("");
+  return `<div style="${STYLES.tableWrap}"><table style="${STYLES.table}"><thead>${head}</thead><tbody>${bodyRows}</tbody></table></div>`;
+}
+
 function renderBlock(kind: BlockKind, lines: readonly string[]): string {
+  if (kind === "table") return renderTable(lines);
+
   if (kind === "ul" || kind === "ol") {
     const liStyle = kind === "ul" ? STYLES.li + STYLES.ulLi : STYLES.li;
     const items = lines.map((line) => `<li style="${liStyle}">${renderInline(line)}</li>`).join("");
@@ -82,6 +103,8 @@ function renderFigure(alt: string, src: string): string {
 }
 
 function classifyLine(line: string): { kind: BlockKind; body: string } {
+  const row = line.match(TABLE_ROW);
+  if (row) return { kind: "table", body: row[1] };
   const ul = line.match(UL_ITEM);
   if (ul) return { kind: "ul", body: ul[1] };
   const ol = line.match(OL_ITEM);
