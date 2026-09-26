@@ -1,0 +1,44 @@
+# Runs on every push and pull request: catches lint, type, test and build
+# failures on GitHub before (or alongside) the Vercel deploy.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, type-check, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Type-check
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test
+
+      # No Algolia keys here on purpose: the build must succeed without them.
+      - name: Build
+        run: yarn build

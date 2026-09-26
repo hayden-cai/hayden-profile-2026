@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "algolia:index": "dotenv -e .env.local tsx scripts/algolia-index.ts"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test \"app/blog/[slug]/renderContent.test.ts\"",
+    "algolia:index": "dotenv -e .env.local tsx scripts/algolia-index.ts",
+    "algolia:index:ci": "tsx scripts/algolia-index.ts"
   },
   "dependencies": {
     "algoliasearch": "^5.52.1",

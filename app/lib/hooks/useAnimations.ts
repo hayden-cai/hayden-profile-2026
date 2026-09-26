@@ -4,9 +4,9 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const splitWords = (el: Element) => {
-  if ((el as any).dataset.split) return el.querySelectorAll('span > span');
-  (el as any).dataset.split = '1';
+const splitWords = (el: HTMLElement) => {
+  if (el.dataset.split) return el.querySelectorAll('span > span');
+  el.dataset.split = '1';
   const text = el.textContent || '';
   el.textContent = '';
   const words = text.split(' ');
@@ -41,8 +41,8 @@ export const useAnimations = () => {
         );
 
       // Reveal words on scroll
-      document.querySelectorAll('[data-reveal-words]').forEach((el) => {
-        if ((el as any).dataset.split || el.closest('#hero')) return;
+      document.querySelectorAll<HTMLElement>('[data-reveal-words]').forEach((el) => {
+        if (el.dataset.split || el.closest('#hero')) return;
         const inners = splitWords(el);
         gsap.from(inners, {
           yPercent: 115,
@@ -59,7 +59,7 @@ export const useAnimations = () => {
       });
 
       // Fade up
-      gsap.utils.toArray('[data-fade-up]').forEach((el: any) => {
+      gsap.utils.toArray<HTMLElement>('[data-fade-up]').forEach((el) => {
         gsap.from(el, {
           opacity: 0,
           y: 40,
@@ -75,7 +75,7 @@ export const useAnimations = () => {
       });
 
       // Stagger
-      gsap.utils.toArray('[data-stagger]').forEach((group: any) => {
+      gsap.utils.toArray<HTMLElement>('[data-stagger]').forEach((group) => {
         const items = group.querySelectorAll('[data-stagger-item]');
         gsap.from(items, {
           opacity: 0,

@@ -1,0 +1,42 @@
+# Re-indexes blog posts in Algolia whenever post data changes on main,
+# so new posts show up in /blog search without running the script by hand.
+name: Algolia index
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/src/data/**"
+      - "scripts/algolia-index.ts"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: algolia-index
+  cancel-in-progress: false
+
+jobs:
+  index:
+    name: Push posts to Algolia
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Secrets live in the "Production" environment, limited to main.
+    environment: Production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Index posts
+        run: yarn algolia:index:ci
+        env:
+          NEXT_PUBLIC_ALGOLIA_APP_ID: ${{ secrets.NEXT_PUBLIC_ALGOLIA_APP_ID }}
+          ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
