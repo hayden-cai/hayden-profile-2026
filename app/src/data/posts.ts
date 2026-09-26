@@ -1,3 +1,5 @@
+import { webSecurityDefenseInDepth } from "./articles/webSecurityDefenseInDepth";
+
 export type Post = {
   slug: string;
   title: string;
@@ -9,6 +11,15 @@ export type Post = {
 };
 
 export const posts: Post[] = [
+  {
+    slug: "web-security-defense-in-depth",
+    title: "Web security in depth: common attacks and layered defences",
+    excerpt: "A field guide to 20 attack classes — from DDoS and SQL injection to SSRF, business logic flaws and prompt injection — and the layered defences that stop them.",
+    date: "Sep 2026",
+    readTime: "15 min read",
+    tag: "Security",
+    content: webSecurityDefenseInDepth,
+  },
   {
     slug: "why-i-switched-to-mastra",
     title: "Why I switched from LangChain to Mastra for AI engineering",

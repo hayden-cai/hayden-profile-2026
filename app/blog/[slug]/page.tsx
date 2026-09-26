@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { posts } from "../../src/data/posts";
 import { notFound } from "next/navigation";
+import { renderContent } from "./renderContent";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -50,15 +51,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         {/* Content */}
         <div
           style={{ color: "#999", fontSize: 16, lineHeight: 1.9 }}
-          dangerouslySetInnerHTML={{
-            __html: post.content
-              .trim()
-              .replace(/^## (.+)$/gm, `<h2 style="font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-0.5px;margin:2.5rem 0 1rem;">$1</h2>`)
-              .replace(/\*\*(.+?)\*\*/g, `<strong style="color:#ddd;">$1</strong>`)
-              .replace(/^- (.+)$/gm, `<li style="margin-bottom:0.5rem;padding-left:1rem;list-style:disc;color:#777;">$1</li>`)
-              .replace(/\n\n/g, `</p><p style="margin-bottom:1.2rem;">`)
-              .replace(/^(?!<)/, `<p style="margin-bottom:1.2rem;">`)
-          }}
+          dangerouslySetInnerHTML={{ __html: renderContent(post.content) }}
         />
       </article>
     </main>

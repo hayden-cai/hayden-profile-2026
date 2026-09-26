@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+  <defs>
+    <marker id="down" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#60a5fa"/>
+    </marker>
+  </defs>
+
+  <rect width="800" height="800" fill="#0b0b0c"/>
+
+  <text x="40" y="44" font-size="13" letter-spacing="3" fill="#60a5fa">INCOMING REQUEST</text>
+  <line x1="190" y1="54" x2="190" y2="68" stroke="#60a5fa" stroke-width="2" marker-end="url(#down)"/>
+
+  <!-- Band template: y = 76 + i * 128 -->
+  <g id="bands">
+    <!-- 01 CLIENT -->
+    <rect x="40" y="76" width="720" height="98" rx="6" fill="#ffffff" fill-opacity="0.025" stroke="#ffffff" stroke-opacity="0.08"/>
+    <rect x="40" y="76" width="4" height="98" fill="#60a5fa" fill-opacity="0.35"/>
+    <text x="68" y="116" font-size="18" font-weight="700" fill="#eeeeee"><tspan fill="#555">01 </tspan>CLIENT</text>
+    <text x="68" y="146" font-size="13" fill="#f87171">✕ stuffing · phishing</text>
+    <text x="330" y="116" font-size="15" fill="#bbbbbb">MFA · Passkeys (WebAuthn)</text>
+    <text x="330" y="144" font-size="15" fill="#bbbbbb">Certificate pinning on mobile</text>
+
+    <!-- 02 EDGE -->
+    <rect x="40" y="204" width="720" height="98" rx="6" fill="#ffffff" fill-opacity="0.025" stroke="#ffffff" stroke-opacity="0.08"/>
+    <rect x="40" y="204" width="4" height="98" fill="#60a5fa" fill-opacity="0.5"/>
+    <text x="68" y="244" font-size="18" font-weight="700" fill="#eeeeee"><tspan fill="#555">02 </tspan>EDGE</text>
+    <text x="68" y="274" font-size="13" fill="#f87171">✕ DDoS · MitM</text>
+    <text x="330" y="244" font-size="15" fill="#bbbbbb">DDoS scrubbing · CDN</text>
+    <text x="330" y="272" font-size="15" fill="#bbbbbb">HTTPS + HSTS · hidden origin</text>
+
+    <!-- 03 GATEWAY -->
+    <rect x="40" y="332" width="720" height="98" rx="6" fill="#ffffff" fill-opacity="0.025" stroke="#ffffff" stroke-opacity="0.08"/>
+    <rect x="40" y="332" width="4" height="98" fill="#60a5fa" fill-opacity="0.65"/>
+    <text x="68" y="372" font-size="18" font-weight="700" fill="#eeeeee"><tspan fill="#555">03 </tspan>GATEWAY / WAF</text>
+    <text x="68" y="402" font-size="13" fill="#f87171">✕ brute force · bots</text>
+    <text x="330" y="372" font-size="15" fill="#bbbbbb">Rate limits · bot detection</text>
+    <text x="330" y="400" font-size="15" fill="#bbbbbb">WAF rules · headers · CORS</text>
+
+    <!-- 04 APPLICATION -->
+    <rect x="40" y="460" width="720" height="98" rx="6" fill="#60a5fa" fill-opacity="0.04" stroke="#60a5fa" stroke-opacity="0.25"/>
+    <rect x="40" y="460" width="4" height="98" fill="#60a5fa" fill-opacity="0.85"/>
+    <text x="68" y="500" font-size="18" font-weight="700" fill="#eeeeee"><tspan fill="#555">04 </tspan>APPLICATION</text>
+    <text x="68" y="530" font-size="13" fill="#f87171">✕ SQLi · XSS · IDOR · SSRF</text>
+    <text x="330" y="500" font-size="15" fill="#bbbbbb">Param. queries · encoding · CSRF</text>
+    <text x="330" y="528" font-size="15" fill="#bbbbbb">AuthZ + ownership · idempotency</text>
+
+    <!-- 05 DATA & INFRA -->
+    <rect x="40" y="588" width="720" height="98" rx="6" fill="#60a5fa" fill-opacity="0.07" stroke="#60a5fa" stroke-opacity="0.4"/>
+    <rect x="40" y="588" width="4" height="98" fill="#60a5fa"/>
+    <text x="68" y="628" font-size="18" font-weight="700" fill="#eeeeee"><tspan fill="#555">05 </tspan>DATA &amp; INFRA</text>
+    <text x="68" y="658" font-size="13" fill="#f87171">✕ key theft · supply chain</text>
+    <text x="330" y="628" font-size="15" fill="#bbbbbb">Least privilege · encryption</text>
+    <text x="330" y="656" font-size="15" fill="#bbbbbb">Secrets manager · IMDSv2 · SBOM</text>
+  </g>
+
+  <!-- Flow arrows between bands -->
+  <g stroke="#60a5fa" stroke-width="2" marker-end="url(#down)">
+    <line x1="190" y1="178" x2="190" y2="198"/>
+    <line x1="190" y1="306" x2="190" y2="326"/>
+    <line x1="190" y1="434" x2="190" y2="454"/>
+    <line x1="190" y1="562" x2="190" y2="582"/>
+  </g>
+
+  <!-- Cross-cutting band -->
+  <rect x="40" y="716" width="720" height="52" rx="6" fill="none" stroke="#fbbf24" stroke-opacity="0.5" stroke-dasharray="6 5"/>
+  <text x="400" y="748" font-size="14" letter-spacing="2" text-anchor="middle" fill="#fbbf24">MONITORING · AUDIT · INCIDENT RESPONSE · BACKUPS</text>
+</svg>
