@@ -12,10 +12,15 @@ import {
 import type { BaseHit, Hit } from "instantsearch.js";
 import { posts } from "@/app/src/data/posts";
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY!
-);
+const ALGOLIA_APP_ID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
+const ALGOLIA_SEARCH_KEY = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY;
+
+// Without Algolia keys (e.g. a misconfigured deploy) the page falls back to the
+// local post list instead of crashing the build.
+const searchClient =
+  ALGOLIA_APP_ID && ALGOLIA_SEARCH_KEY ? algoliasearch(ALGOLIA_APP_ID, ALGOLIA_SEARCH_KEY) : null;
+
+type SearchClient = NonNullable<typeof searchClient>;
 
 // Tag → gradient color map
 const tagColors: Record<string, string> = {
@@ -44,7 +49,7 @@ type BlogHit = BaseHit & {
   readTime: string;
 };
 
-function BlogHitCard({ hit }: { hit: Hit<BlogHit> }) {
+function BlogHitCard({ hit }: { hit: BlogHit | Hit<BlogHit> }) {
   const bg = tagColors[hit.tag] ?? "linear-gradient(135deg, #1a1a1a, #2a2a2a)";
 
   return (
@@ -145,6 +150,39 @@ function EmptyState() {
   );
 }
 
+const DIVIDER = "1px solid rgba(255,255,255,0.08)";
+
+function BlogTitle() {
+  return (
+    <>
+      <p className="text-xs tracking-widest uppercase mb-3" style={{ fontFamily: "monospace", color: "#555" }}>
+        Writing
+      </p>
+      <h1
+        className="font-bold mb-10"
+        style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-3px", lineHeight: 0.95, color: "#fff" }}
+      >
+        Blog
+      </h1>
+    </>
+  );
+}
+
+function StaticBlog() {
+  return (
+    <div className="px-5 sm:px-8 md:px-12 py-16 md:py-20">
+      <div className="mb-10">
+        <BlogTitle />
+      </div>
+      <div style={{ borderTop: DIVIDER }}>
+        {posts.map((post) => (
+          <BlogHitCard key={post.slug} hit={{ ...post, objectID: post.slug }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function BlogPage() {
   return (
     <main style={{ background: "#111", color: "#fff", minHeight: "100vh" }}>
@@ -161,19 +199,18 @@ export default function BlogPage() {
         </span>
       </nav>
 
-      <InstantSearch searchClient={searchClient} indexName="blog_posts">
+      {searchClient ? <SearchableBlog client={searchClient} /> : <StaticBlog />}
+    </main>
+  );
+}
+
+function SearchableBlog({ client }: { client: SearchClient }) {
+  return (
+      <InstantSearch searchClient={client} indexName="blog_posts">
         <div className="px-5 sm:px-8 md:px-12 py-16 md:py-20">
           {/* Header */}
           <div className="mb-10">
-            <p className="text-xs tracking-widest uppercase mb-3" style={{ fontFamily: "monospace", color: "#555" }}>
-              Writing
-            </p>
-            <h1
-              className="font-bold mb-10"
-              style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-3px", lineHeight: 0.95, color: "#fff" }}
-            >
-              Blog
-            </h1>
+            <BlogTitle />
 
             {/* Search bar */}
             <div className="relative mb-6">
@@ -195,7 +232,7 @@ export default function BlogPage() {
           </div>
 
           {/* Results */}
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <div style={{ borderTop: DIVIDER }}>
             <EmptyState />
             <Hits<BlogHit> hitComponent={BlogHitCard} />
           </div>
@@ -234,6 +271,5 @@ export default function BlogPage() {
           .ais-Hits-item { padding: 0; }
         `}</style>
       </InstantSearch>
-    </main>
   );
 }
