@@ -1,0 +1,53 @@
+.section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: clamp(48px, 7vh, 80px) clamp(24px, 5vw, 64px);
+}
+
+.sectionLabel {
+  font-family: monospace;
+  color: #555;
+}
+
+.heading {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -1px;
+  color: #fff;
+}
+
+.updatedNote {
+  font-family: monospace;
+  font-size: 12px;
+  color: #444;
+}
+
+.embedWrapper {
+  height: 352px;
+  flex-shrink: 0;
+}
+
+.embedFrame {
+  border-radius: 4px;
+  display: block;
+}
+
+.bodyText {
+  font-size: 15px;
+  color: #666;
+}
+
+.moodRow {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.moodLabel {
+  font-family: monospace;
+  font-size: 11px;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.moodValue {
+  font-size: 13px;
+  color: #888;
+}

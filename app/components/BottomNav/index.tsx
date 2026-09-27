@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from './BottomNav.module.scss';
 
 const sections = [
   { id: "about", label: "About" },
@@ -44,57 +45,38 @@ export default function BottomNav() {
 
   return (
     <div
+      className={`hidden md:block ${styles.wrapper}`}
       style={{
-        position: "fixed",
-        bottom: 32,
-        left: "50%",
         transform: `translateX(-50%) translateY(${visible ? "0" : "16px"})`,
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? "auto" : "none",
         transition: "opacity 0.4s ease, transform 0.4s ease",
-        zIndex: 50,
-        whiteSpace: "nowrap",
       }}
     >
-      <div
-        className="flex items-center gap-1 px-3 py-2 rounded-full"
-        style={{
-          background: "rgba(20,20,20,0.85)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.1)",
-        }}
-      >
+      <div className={`flex items-center gap-1 px-2 sm:px-3 py-2 rounded-full overflow-x-auto ${styles.pill}`}>
         {sections.map(({ id, label }) => {
           const isActive = active === id;
           return (
             <button
               key={id}
               onClick={() => handleClick(id)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer border-none"
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-all duration-200 cursor-pointer border-none shrink-0 focus:outline-none focus-visible:outline-none ${styles.navButton}`}
               style={{
-                fontFamily: "monospace",
-                fontSize: 11,
-                letterSpacing: "1.5px",
-                textTransform: "uppercase",
                 color: isActive ? "#fff" : "#555",
                 background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
               }}
             >
               <span
+                className={styles.dot}
                 style={{
-                  width: 5,
-                  height: 5,
-                  borderRadius: "50%",
                   background: isActive ? "#fff" : "#333",
-                  flexShrink: 0,
-                  display: "inline-block",
-                  transition: "background 0.2s",
                 }}
               />
-              {label}
+              <span className={isActive ? "inline" : "hidden sm:inline"}>{label}</span>
             </button>
           );
         })}
+
       </div>
     </div>
   );
