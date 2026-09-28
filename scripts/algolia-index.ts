@@ -21,6 +21,7 @@ const records = posts.map((post) => ({
   tag: post.tag,
   date: post.date,
   readTime: post.readTime,
+  cover: post.cover ?? null,
 }));
 
 async function main(): Promise<void> {

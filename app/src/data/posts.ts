@@ -8,6 +8,8 @@ export type Post = {
   date: string;
   readTime: string;
   tag: string;
+  /** Optional cover image under /public, shown on the blog card. */
+  cover?: string;
   content: string;
 };
 
@@ -19,6 +21,7 @@ export const posts: Post[] = [
     date: "Sep 2026",
     readTime: "14 min read",
     tag: "Redis",
+    cover: "/blog/redis/cover.svg",
     content: redisTopUseCases,
   },
   {
@@ -28,6 +31,7 @@ export const posts: Post[] = [
     date: "Sep 2026",
     readTime: "15 min read",
     tag: "Security",
+    cover: "/blog/web-security/cover.svg",
     content: webSecurityDefenseInDepth,
   },
   {
