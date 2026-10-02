@@ -142,18 +142,18 @@ function SearchableBlog({ client }: { client: SearchClient }) {
           .ais-RefinementList-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
           .ais-RefinementList-label {
             display: flex; align-items: center; gap: 6px; cursor: pointer;
-            padding: 6px 16px; border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 16px; border: 1px solid #fff;
             border-radius: 999px; font-family: monospace; font-size: 11px;
             letter-spacing: 1.5px; text-transform: uppercase;
-            color: #555; transition: all 0.2s;
+            color: #fff; transition: all 0.2s;
           }
-          .ais-RefinementList-label:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+          .ais-RefinementList-label:hover { background: rgba(255,255,255,0.1); }
           .ais-RefinementList-item--selected .ais-RefinementList-label {
-            color: #fff; border-color: rgba(255,255,255,0.6);
-            background: rgba(255,255,255,0.08);
+            color: #fff; border-color: #7c5cff; background: #7c5cff;
+            box-shadow: 0 0 18px rgba(124,92,255,0.55);
           }
           .ais-RefinementList-checkbox { display: none; }
-          .ais-RefinementList-count { font-size: 10px; color: #444; }
+          .ais-RefinementList-count { font-size: 10px; color: rgba(255,255,255,0.6); }
           .ais-Hits-list { list-style: none; padding: 0; margin: 0; }
           .ais-Hits-item { padding: 0; }
         `}</style>
