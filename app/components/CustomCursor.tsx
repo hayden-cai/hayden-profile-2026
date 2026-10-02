@@ -1,8 +1,25 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useCursor } from '../lib/hooks/useCursor'
 
+const DESKTOP_POINTER_QUERY = '(hover: hover) and (pointer: fine)';
+
 export const CustomCursor = () => {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(DESKTOP_POINTER_QUERY);
+    const update = () => setEnabled(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  return enabled ? <CursorElements /> : null;
+};
+
+const CursorElements = () => {
   const { dotRef, ringRef } = useCursor();
 
   return (
